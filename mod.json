@@ -1,0 +1,104 @@
+{
+	"geode": "4.10.0",
+	"version": "v1.0.0",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "nichie.onion_skin",
+	"name": "Onion Skin",
+	"description": "Turns editor layers into an onion skin like tool at the click of a button.",
+
+	"developer": "nichie",
+	"links": {
+		"source": "https://github.com/nichie-dv/OnionSkin"
+	},
+	
+
+	"dependencies": {
+		"geode.node-ids": {
+			"version": ">=1.17.0",
+			"importance": "required"
+		},
+		"geode.custom-keybinds": {
+            "version": ">=1.11.0",
+            "importance": "required"
+        }
+	},
+	"tags": [
+		"editor",
+		"offline"
+	],
+	"resources": {
+        "sprites": [
+            "resources/onionBtn_on.png",
+			"resources/onionBtn_off.png"
+        ]
+    },
+
+	"settings": {
+        "main-title": {
+            "type": "title",
+            "name": "Main Settings"
+        },
+        "past-color": {
+            "name": "Past Frames",
+            "type": "rgb",
+            "default": "#f00",
+			"description": "Change what color past frames show up as."
+        },
+		"future-color": {
+            "name": "Future Frames",
+            "type": "rgb",
+            "default": "#00f",
+			"description": "Change what color future frames show up as."
+        },
+		"rendering-title": {
+            "type": "title",
+            "name": "Rendering Settings"
+        },
+		"show-past": {
+			"type": "bool",
+			"name": "Show Past Frames",
+			"default": true
+		},
+		"show-future": {
+			"type": "bool",
+			"name": "Show Future Frames",
+			"default": true
+		},
+		"frame-depth": {
+            "name": "Frame Cutoff",
+			"description": "Change how many past and future frames will be displayed.",
+            "type": "int",
+            "default": 5,
+            "min": 1,
+            "max": 50,
+            "control": {
+                "slider": true
+            }
+        },
+		"max-opacity": {
+            "name": "Maximum Frame Opacity",
+            "type": "int",
+            "default": 35,
+            "min": 0,
+            "max": 100,
+            "control": {
+                "slider": true
+            }
+        },
+		"min-opacity": {
+            "name": "Minimum Frame Opacity",
+            "type": "int",
+            "default": 0,
+            "min": 0,
+            "max": 100,
+            "control": {
+                "slider": true
+            }
+        }
+    }
+}
