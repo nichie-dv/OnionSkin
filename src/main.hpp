@@ -11,25 +11,15 @@ public:
         bool onionEnabled = false;
         int currentLayer = -1;
 
-        cocos2d::ccColor3B pastColor;  
-        cocos2d::ccColor3B futureColor; 
-        int maxLayerDistance;
-        int maxOpacity;
-        int minOpacity;
+        cocos2d::ccColor3B pastColor = {255, 0, 0};  
+        cocos2d::ccColor3B futureColor = {0, 0, 255}; 
+        int maxLayerDistance = 5;
+        int maxOpacity = 35;
+        int minOpacity = 0;
 
-        bool renderPast;
-        bool renderFuture;
+        bool renderPast = true;
+        bool renderFuture = true;
 
-
-
-        Fields():
-            pastColor{255, 0, 0},
-            futureColor{0, 0, 255},
-            maxLayerDistance(5),
-            maxOpacity(35),
-            minOpacity(0),
-            renderPast(true),
-            renderFuture(true)
-        {}
     };
 };
+// This is probably very wrong but it works

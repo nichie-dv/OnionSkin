@@ -9,6 +9,7 @@ This mod brings the popular onion skin animation tool to Geometry Dash using edi
 * Customizable colors and opacity values
 * Many other QOL settings
 
+To use, simply toggle the onion button found next to the editor layer controls.
 
 ## Custom Keybinds
 This mod adds 2 new editor keybinds:

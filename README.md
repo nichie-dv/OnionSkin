@@ -1,23 +1,24 @@
-# onionskin
-This is where she makes a mod.
+# Onion Skin
+Adds an onion skin to the Geometry Dash editor.
 
-<img src="logo.png" width="150" alt="the mod's logo" />
+<img src="logo.png" width="150" alt="onion skin" />
 
-*Update logo.png to change your mod's icon (please)*
 
-## Getting started
-We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
+## How to use
+Onion skin can be enabled in the editor using the following button found next to the layer controls:
 
-## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
-```sh
-# Assuming you have the Geode CLI set up already
-geode build
-```
+<img src="resources/onionBtn_on.png" width="75">
 
-# Resources
-* [Geode SDK Documentation](https://docs.geode-sdk.org/)
-* [Geode SDK Source Code](https://github.com/geode-sdk/geode/)
-* [Geode CLI](https://github.com/geode-sdk/cli)
-* [Bindings](https://github.com/geode-sdk/bindings/)
-* [Dev Tools](https://github.com/geode-sdk/DevTools)
+This mod also adds the following keybinds:
+
+- `F9` - toggle past frames
+- `F10` - toggle future frames
+
+## Previews:
+
+<img src="resources/preview.png" width="350">
+
+<img src="resources/preview2.png" width="350">
+
+
+

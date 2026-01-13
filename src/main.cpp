@@ -5,34 +5,22 @@
 
 
 
-
+// Add keybinds
 using namespace keybinds;
 $execute {
     BindManager::get()->registerBindable({
-        // ID, should be prefixed with mod ID
         "renderPast"_spr,
-        // Name
         "Render Past Frames",
-        // Description, leave empty for none
         "",
-        // Default binds
         { Keybind::create(cocos2d::KEY_F9, Modifier::None) },
-        // Category; use slashes for specifying subcategories. See the
-        // Category class for default categories
         "Onion Skin/Rendering"
     });
 
     BindManager::get()->registerBindable({
-        // ID, should be prefixed with mod ID
         "renderFuture"_spr,
-        // Name
         "Render Future Frames",
-        // Description, leave empty for none
         "",
-        // Default binds
         { Keybind::create(cocos2d::KEY_F10, Modifier::None) },
-        // Category; use slashes for specifying subcategories. See the
-        // Category class for default categories
         "Onion Skin/Rendering"
     });
 
@@ -50,7 +38,7 @@ class $modify(myEditorUI, EditorUI) {
 	
 
     static void onModify(auto& self) {
-        (void)self.setHookPriority("EditorUI::init", -1500); //add button to right hand side
+        (void)self.setHookPriority("EditorUI::init", -1600); // Make late to add button to far right
     }
 
     bool init(LevelEditorLayer* p0) {
@@ -61,7 +49,7 @@ class $modify(myEditorUI, EditorUI) {
             if (!g_onionFields)
                 g_onionFields = new OnionSkin::Fields();
             
-            // get settings
+            // Get settings
             g_onionFields->pastColor = Mod::get()->getSettingValue<cocos2d::ccColor3B>("past-color");
             g_onionFields->futureColor = Mod::get()->getSettingValue<cocos2d::ccColor3B>("future-color");
             g_onionFields->maxLayerDistance = Mod::get()->getSettingValue<int>("frame-depth");
@@ -71,14 +59,16 @@ class $modify(myEditorUI, EditorUI) {
             g_onionFields->renderFuture = Mod::get()->getSettingValue<bool>("show-future");
 
 
-            // add past callback
+            // Add past keybind callback
             this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
                 if (event->isDown()) {
                     g_onionFields->renderPast = !g_onionFields->renderPast;
+                    
+                    // Change menu setting accordingly
                     Mod::get()->setSettingValue<bool>("show-past", g_onionFields->renderPast);
                     auto alert = TextAlertPopup::create("Past Frames: " + std::string(g_onionFields->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
-                    alert->setAlertPosition( // thanks
+                    alert->setAlertPosition( // Great value
                         { 0.f, 1.f },
                         { 20.f, -20.f }
                     );
@@ -90,11 +80,12 @@ class $modify(myEditorUI, EditorUI) {
                 return ListenerResult::Propagate;
             }, "renderPast"_spr);
             
-
-            // add future callback
+            // Add future keybind callback
             this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
                 if (event->isDown()) {
                     g_onionFields->renderFuture = !g_onionFields->renderFuture;
+
+                    // Change menu setting accordingly
                     Mod::get()->setSettingValue<bool>("show-future", g_onionFields->renderFuture);
                     auto alert = TextAlertPopup::create("Future Frames: " + std::string(g_onionFields->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
@@ -112,6 +103,7 @@ class $modify(myEditorUI, EditorUI) {
 
             g_onionFields->levelEditorLayer = p0;
 
+            // Create toggle button
             auto onionOnSpr = CCSprite::create("onionBtn_on.png"_spr);
             auto onionOffSpr = CCSprite::create("onionBtn_off.png"_spr);
             g_onionFields->layerToggle = CCMenuItemToggler::create(onionOffSpr, onionOnSpr, this, menu_selector(myEditorUI::onToggle));
@@ -119,10 +111,13 @@ class $modify(myEditorUI, EditorUI) {
             g_onionFields->layerToggle->m_notClickable = false;
             g_onionFields->layerToggle->toggle(g_onionFields->onionEnabled);
 
+            // Add toggle button to layer menu
             layerMenu->addChild(g_onionFields->layerToggle);
             layerMenu->updateLayout();
 
             g_onionFields->currentLayer = p0->m_currentLayer;
+
+            // Check for layer updates
             schedule(schedule_selector(myEditorUI::checkLayer), 0);
 
         }
@@ -136,9 +131,12 @@ class $modify(myEditorUI, EditorUI) {
 
     void checkLayer(float)
 	{
+        // I'm not really sure
 		static int layer = -500;
 		if (g_onionFields->levelEditorLayer->m_currentLayer == layer)
 			return;
+
+        // Update current layer
 		layer = g_onionFields->levelEditorLayer->m_currentLayer;
         g_onionFields->currentLayer = layer;
 		
@@ -147,15 +145,9 @@ class $modify(myEditorUI, EditorUI) {
 };
 
 
-
-
-
 #include <Geode/modify/GameObject.hpp>
 class $modify(MyGameObject, GameObject) {
 public:
-
-    
-
     void updateMainColor(const ccColor3B& color) {
         auto ui = EditorUI::get();
         if (!ui) {
@@ -167,27 +159,25 @@ public:
             reinterpret_cast<cocos2d::CCObject*>(this)
         );
         
-        
         if (g_onionFields->onionEnabled && !isSelected) {       
             ccColor3B newColor;
 
             if (this->m_editorLayer == g_onionFields->currentLayer || g_onionFields->currentLayer == -1) {
-                newColor = color; // current layer
+                // Current layer
+                newColor = color; 
             }
             else if (this->m_editorLayer < g_onionFields->currentLayer) {
-                newColor = g_onionFields->pastColor; // below current layer
+                // Below current layer
+                newColor = g_onionFields->pastColor; 
             }
             else {
-                newColor = g_onionFields->futureColor; // above current layer
+                // Above current layer
+                newColor = g_onionFields->futureColor; 
             }
         
             GameObject::updateMainColor(newColor); 
-            if (this->hasSecondaryColor()) 
-                MyGameObject::updateSecondaryColor(newColor);
         } else {
-            GameObject::updateMainColor(color);
-            if (this->hasSecondaryColor()) 
-                GameObject::updateSecondaryColor(color);
+            GameObject::updateMainColor(color);        
         }
     }
 
@@ -205,13 +195,16 @@ public:
         if (g_onionFields->onionEnabled && !isSelected) {
             ccColor3B newColor;
             if (this->m_editorLayer == g_onionFields->currentLayer || g_onionFields->currentLayer == -1) {
-                newColor = color; // current layer 
+                // Current layer 
+                newColor = color; 
             }
             else if (this->m_editorLayer < g_onionFields->currentLayer) {
-                newColor = g_onionFields->pastColor; // below current layer
+                // Below current layer
+                newColor = g_onionFields->pastColor; 
             }
             else {
-                newColor = g_onionFields->futureColor; // above current layer
+                // Above current layer
+                newColor = g_onionFields->futureColor; 
             }
             GameObject::updateSecondaryColor(newColor);
         } else {
@@ -233,10 +226,11 @@ public:
         if (g_onionFields->onionEnabled && !isSelected) {
             GLubyte newAlpha;
             
-            
-            if (this->m_editorLayer == g_onionFields->currentLayer || g_onionFields->currentLayer == -1) {       
-                newAlpha = opacity; // current layer
+            if (this->m_editorLayer == g_onionFields->currentLayer || g_onionFields->currentLayer == -1) {   
+                // Current layer    
+                newAlpha = opacity; 
             } else {
+                // Not current layer
                 int distance = std::abs(this->m_editorLayer - g_onionFields->currentLayer);
                 int maxDistance = g_onionFields->maxLayerDistance;
 
@@ -248,6 +242,7 @@ public:
                 newAlpha = static_cast<GLubyte>(minAlpha + scaleFactor * (maxAlpha - minAlpha));
             }
             
+            // Make invisible if it is supposed to not be visible (genius)
             if ((!g_onionFields->renderPast && this->m_editorLayer < g_onionFields->currentLayer) || (!g_onionFields->renderFuture && this->m_editorLayer > g_onionFields->currentLayer)) {
                 newAlpha = 0;
             }
@@ -266,3 +261,4 @@ public:
 
 
 
+// im new to c++ & modding in general, let me know where i can improve.
