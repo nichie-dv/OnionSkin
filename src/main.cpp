@@ -1,10 +1,12 @@
 #include <Geode/Geode.hpp>
 #include "main.hpp"
-#include <geode.custom-keybinds/include/OptionalAPI.hpp>
+#ifndef GEODE_IS_IOS
+#include <geode.custom-keybinds/include/Keybinds.hpp>
+#endif
 #include <Geode/ui/Notification.hpp>
 
 
-
+#ifndef GEODE_IS_IOS
 // Add keybinds
 using namespace keybinds;
 $execute {
@@ -25,7 +27,7 @@ $execute {
     });
 
 }
-
+#endif
 
 
 
@@ -58,7 +60,7 @@ class $modify(myEditorUI, EditorUI) {
             g_onionFields->renderPast = Mod::get()->getSettingValue<bool>("show-past");
             g_onionFields->renderFuture = Mod::get()->getSettingValue<bool>("show-future");
 
-
+            #ifndef GEODE_IS_IOS
             // Add past keybind callback
             this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
                 if (event->isDown()) {
@@ -99,7 +101,7 @@ class $modify(myEditorUI, EditorUI) {
                 }
                 return ListenerResult::Propagate;
             }, "renderFuture"_spr);
-
+            #endif
 
             g_onionFields->levelEditorLayer = p0;
 
