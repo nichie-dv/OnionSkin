@@ -3,7 +3,6 @@
 #ifndef GEODE_IS_IOS
 #include <geode.custom-keybinds/include/Keybinds.hpp>
 #endif
-#include <Geode/ui/Notification.hpp>
 
 
 #ifndef GEODE_IS_IOS
@@ -28,6 +27,10 @@ $execute {
 
 }
 #endif
+
+
+
+
 
 
 
@@ -65,7 +68,7 @@ class $modify(myEditorUI, EditorUI) {
             this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
                 if (event->isDown()) {
                     g_onionFields->renderPast = !g_onionFields->renderPast;
-                    
+
                     // Change menu setting accordingly
                     Mod::get()->setSettingValue<bool>("show-past", g_onionFields->renderPast);
                     auto alert = TextAlertPopup::create("Past Frames: " + std::string(g_onionFields->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
@@ -101,8 +104,8 @@ class $modify(myEditorUI, EditorUI) {
                 }
                 return ListenerResult::Propagate;
             }, "renderFuture"_spr);
-            #endif
 
+            #endif
             g_onionFields->levelEditorLayer = p0;
 
             // Create toggle button
