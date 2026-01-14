@@ -19,13 +19,11 @@
 	
 
 	"dependencies": {
-		"geode.node-ids": {
-			"version": ">=1.17.0",
-			"importance": "required"
-		},
+		"geode.node-ids": ">=1.21.1",
 		"geode.custom-keybinds": {
             "version": ">=1.11.0",
-            "importance": "required"
+            "importance": "required",
+            "platforms": ["win", "mac", "android"]
         }
 	},
 	"tags": [
