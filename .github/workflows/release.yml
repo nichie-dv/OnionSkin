@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the mod (Release)
-        uses: geode-sdk/build-geode-mod@stable
+        uses: geode-sdk/build-geode-mod@main
         with:
           # build-config: RelWithDebInfo
           # export-symbols: true
@@ -51,7 +51,7 @@ jobs:
     needs: ['build']
 
     steps:
-      - uses: geode-sdk/build-geode-mod/combine@stable
+      - uses: geode-sdk/build-geode-mod/combine@main
         id: build
 
       - uses: actions/upload-artifact@v4
