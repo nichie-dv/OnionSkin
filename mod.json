@@ -1,6 +1,6 @@
 {
-	"geode": "4.10.0",
-	"version": "v1.0.3",
+	"geode": "4.11.0",
+	"version": "v1.0.4",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -9,7 +9,7 @@
 	},
 	"id": "nichie.onion_skin",
 	"name": "Onion Skin",
-	"description": "Turns editor layers into an onion skin like tool at the click of a button.",
+	"description": "Turns editor layers into an onion skin like tool",
 
 	"developer": "nichie",
 	"links": {
