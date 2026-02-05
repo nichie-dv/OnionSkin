@@ -8,6 +8,9 @@ public:
     struct Fields {
         CCMenuItemToggler* layerToggle = nullptr;
         LevelEditorLayer* levelEditorLayer = nullptr;
+
+        bool m_playtesting = false;
+
         bool onionEnabled = false;
         int currentLayer = -1;
 

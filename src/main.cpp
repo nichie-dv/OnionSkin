@@ -36,11 +36,12 @@ $execute {
 
 using namespace geode::prelude;
 
-OnionSkin::Fields* g_onionFields;
+OnionSkin::Fields* g_onionFields = nullptr;
 
 #include <Geode/modify/EditorUI.hpp>
 class $modify(myEditorUI, EditorUI) {
-	
+
+
 
     static void onModify(auto& self) {
         (void)self.setHookPriority("EditorUI::init", -1600); // Make late to add button to far right
@@ -125,10 +126,37 @@ class $modify(myEditorUI, EditorUI) {
             // Check for layer updates
             schedule(schedule_selector(myEditorUI::checkLayer), 0);
 
+            
+
         }
 		
         return true;
     }
+
+    void keyDown(cocos2d::enumKeyCodes p0) {
+		EditorUI::keyDown(p0);
+		if (!g_onionFields->m_playtesting || getChildByID("position-slider")->isVisible()) {
+			g_onionFields->layerToggle->setVisible(true);
+		}
+		else {
+			g_onionFields->layerToggle->setVisible(false);
+		}
+	}
+
+    void onPlaytest(cocos2d::CCObject* sender) {
+        EditorUI::onPlaytest(sender);
+        g_onionFields->m_playtesting = true;
+    }
+
+    void onStopPlaytest(cocos2d::CCObject* sender) {
+        EditorUI::onStopPlaytest(sender);
+        g_onionFields->m_playtesting = false;
+    }
+
+    void showUI(bool show) {
+		EditorUI::showUI(show);
+		g_onionFields->layerToggle->setVisible(show);
+	}
 
     void onToggle(CCObject*) {
         g_onionFields->onionEnabled = !g_onionFields->onionEnabled;
