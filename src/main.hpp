@@ -9,7 +9,7 @@ public:
         CCMenuItemToggler* layerToggle = nullptr;
         LevelEditorLayer* levelEditorLayer = nullptr;
 
-        bool m_playtesting = false;
+        bool playtesting = false;
 
         bool onionEnabled = false;
         int currentLayer = -1;
@@ -22,6 +22,8 @@ public:
 
         bool renderPast = true;
         bool renderFuture = true;
+
+        bool shiftModifier = false;
 
     };
 };
