@@ -99,15 +99,15 @@ class $modify(myEditorUI, EditorUI) {
 
     void keyDown(cocos2d::enumKeyCodes key, double dt) {
         auto pas = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
-        auto fut = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
+        auto fut = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderfuture-keybind");
 
         
-        if (key == enumKeyCodes::KEY_Shift) {
+        if (key == enumKeyCodes::KEY_LeftShift || key == enumKeyCodes::KEY_RightShift) {
             g_onionFields->shiftModifier = true;
-        } else {
-            g_onionFields->shiftModifier = false;;
         }
         
+        
+
         if (key == pas.back().key && g_onionFields->shiftModifier) {
             onRPKeybind();
             return; 
@@ -116,6 +116,7 @@ class $modify(myEditorUI, EditorUI) {
             onRFKeybind();
             return; 
         }
+
 		EditorUI::keyDown(key, dt);
 		if (!g_onionFields->playtesting || getChildByID("position-slider")->isVisible()) {
 			g_onionFields->layerToggle->setVisible(true);
@@ -123,8 +124,15 @@ class $modify(myEditorUI, EditorUI) {
 		else {
 			g_onionFields->layerToggle->setVisible(false);
 		}
+
+
         
 	}
+
+    void keyUp(cocos2d::enumKeyCodes key, double dt) {
+        if (key == enumKeyCodes::KEY_Shift) g_onionFields->shiftModifier = false;
+        EditorUI::keyUp(key, dt);
+    }
 
     void onPlaytest(cocos2d::CCObject* sender) {
         EditorUI::onPlaytest(sender);
