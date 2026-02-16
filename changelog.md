@@ -10,3 +10,5 @@
 - geode 5.0.0-alpha.1 update
 # 1.2.0
 - geode 5.0.0-beta.2 update + bindings fix
+# 1.2.1
+- compatability bugfix
