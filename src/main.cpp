@@ -1,42 +1,46 @@
 #include <Geode/Geode.hpp>
+#include <Geode/loader/SettingV3.hpp>
 #include "main.hpp"
-#ifndef GEODE_IS_IOS
-#include <geode.custom-keybinds/include/Keybinds.hpp>
-#endif
-
-
-#ifndef GEODE_IS_IOS
-// Add keybinds
-using namespace keybinds;
-$execute {
-    BindManager::get()->registerBindable({
-        "renderPast"_spr,
-        "Render Past Frames",
-        "",
-        { Keybind::create(cocos2d::KEY_F9, Modifier::None) },
-        "Onion Skin/Rendering"
-    });
-
-    BindManager::get()->registerBindable({
-        "renderFuture"_spr,
-        "Render Future Frames",
-        "",
-        { Keybind::create(cocos2d::KEY_F10, Modifier::None) },
-        "Onion Skin/Rendering"
-    });
-
-}
-#endif
-
-
-
-
 
 
 
 using namespace geode::prelude;
 
 OnionSkin::Fields* g_onionFields = nullptr;
+
+
+void onRPKeybind() {
+    g_onionFields->renderPast = !g_onionFields->renderPast;
+
+    // Change menu setting accordingly
+    Mod::get()->setSettingValue<bool>("show-past", g_onionFields->renderPast);
+    auto alert = TextAlertPopup::create("Past Frames: " + std::string(g_onionFields->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
+
+    alert->setAlertPosition( // Great value
+        { 0.f, 1.f },
+        { 20.f, -20.f }
+    );
+    alert->setLabelColor({0, 255, 0});
+    alert->setZOrder(9999);
+    EditorUI::get()->addChild(alert);
+}
+
+void onRFKeybind() {
+    g_onionFields->renderFuture = !g_onionFields->renderFuture;
+
+    // Change menu setting accordingly
+    Mod::get()->setSettingValue<bool>("show-future", g_onionFields->renderFuture);
+    auto alert = TextAlertPopup::create("Future Frames: " + std::string(g_onionFields->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
+
+    alert->setAlertPosition( 
+        { 0.f, 1.f },
+        { 20.f, -20.f }
+    );
+    alert->setLabelColor({0, 255, 0});
+    alert->setZOrder(9999);
+    EditorUI::get()->addChild(alert);
+}
+
 
 #include <Geode/modify/EditorUI.hpp>
 class $modify(myEditorUI, EditorUI) {
@@ -63,55 +67,15 @@ class $modify(myEditorUI, EditorUI) {
             g_onionFields->minOpacity = Mod::get()->getSettingValue<int>("min-opacity");
             g_onionFields->renderPast = Mod::get()->getSettingValue<bool>("show-past");
             g_onionFields->renderFuture = Mod::get()->getSettingValue<bool>("show-future");
-
-            #ifndef GEODE_IS_IOS
-            // Add past keybind callback
-            this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-                if (event->isDown()) {
-                    g_onionFields->renderPast = !g_onionFields->renderPast;
-
-                    // Change menu setting accordingly
-                    Mod::get()->setSettingValue<bool>("show-past", g_onionFields->renderPast);
-                    auto alert = TextAlertPopup::create("Past Frames: " + std::string(g_onionFields->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
-
-                    alert->setAlertPosition( // Great value
-                        { 0.f, 1.f },
-                        { 20.f, -20.f }
-                    );
-                    alert->setLabelColor({0, 255, 0});
-                    alert->setZOrder(9999);
-                    EditorUI::get()->addChild(alert);
-                    
-                }
-                return ListenerResult::Propagate;
-            }, "renderPast"_spr);
-            
-            // Add future keybind callback
-            this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-                if (event->isDown()) {
-                    g_onionFields->renderFuture = !g_onionFields->renderFuture;
-
-                    // Change menu setting accordingly
-                    Mod::get()->setSettingValue<bool>("show-future", g_onionFields->renderFuture);
-                    auto alert = TextAlertPopup::create("Future Frames: " + std::string(g_onionFields->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
-
-                    alert->setAlertPosition( 
-                        { 0.f, 1.f },
-                        { 20.f, -20.f }
-                    );
-                    alert->setLabelColor({0, 255, 0});
-                    alert->setZOrder(9999);
-                    EditorUI::get()->addChild(alert);
-                }
-                return ListenerResult::Propagate;
-            }, "renderFuture"_spr);
-
-            #endif
             g_onionFields->levelEditorLayer = p0;
 
             // Create toggle button
             auto onionOnSpr = CCSprite::create("onionBtn_on.png"_spr);
             auto onionOffSpr = CCSprite::create("onionBtn_off.png"_spr);
+
+            onionOnSpr->setScale(0.75f);
+            onionOffSpr->setScale(0.75f);
+
             g_onionFields->layerToggle = CCMenuItemToggler::create(onionOffSpr, onionOnSpr, this, menu_selector(myEditorUI::onToggle));
             g_onionFields->layerToggle->setID("onion-skin-toggle"_spr);
             g_onionFields->layerToggle->m_notClickable = false;
@@ -132,15 +96,26 @@ class $modify(myEditorUI, EditorUI) {
 		
         return true;
     }
-
-    void keyDown(cocos2d::enumKeyCodes p0) {
-		EditorUI::keyDown(p0);
+    
+    void keyDown(cocos2d::enumKeyCodes key, double dt) {
+        auto pas = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
+        auto fut = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
+        if (key == pas.back().key && (GetAsyncKeyState(VK_SHIFT) & 0x8000)) {
+            onRPKeybind();
+            return; 
+        }
+        if (key == fut.back().key && (GetAsyncKeyState(VK_SHIFT) & 0x8000)) {
+            onRFKeybind();
+            return; 
+        }
+		EditorUI::keyDown(key, dt);
 		if (!g_onionFields->m_playtesting || getChildByID("position-slider")->isVisible()) {
 			g_onionFields->layerToggle->setVisible(true);
 		}
 		else {
 			g_onionFields->layerToggle->setVisible(false);
 		}
+        
 	}
 
     void onPlaytest(cocos2d::CCObject* sender) {
@@ -290,8 +265,28 @@ public:
 
 
 
+/*
+$execute {
+    
+    
+    
+	listenForKeybindSettingPresses("renderpast-keybind", [](Keybind const& keybind, bool down, bool repeat) {
+		if (CCDirector::get()->getRunningScene()->getChildByID("LevelEditorLayer") != nullptr) {
+			if (down && !repeat) {
+				onRPKeybind();
+			}
+		}
+	});
 
+    
+	listenForKeybindSettingPresses("renderfuture-keybind", [](Keybind const& keybind, bool down, bool repeat) {
+		if (CCDirector::get()->getRunningScene()->getChildByID("LevelEditorLayer") != nullptr) {
+			if (down && !repeat) {
+				onRFKeybind();
+			}
+		}
+	});
+    
+}
 
-
-
-// im new to c++ & modding in general, let me know where i can improve.
+*/

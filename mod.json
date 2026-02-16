@@ -1,11 +1,11 @@
 {
-	"geode": "4.10.1",
-	"version": "v1.1.0",
+	"geode": "5.0.0-beta.2",
+	"version": "v1.2.0",
 	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
 	},
 	"id": "nichie.onion_skin",
 	"name": "Onion Skin",
@@ -19,12 +19,7 @@
 	
 
 	"dependencies": {
-		"geode.node-ids": ">=1.21.1",
-		"geode.custom-keybinds": {
-            "version": ">=1.11.0",
-            "importance": "required",
-            "platforms": ["win", "mac", "android"]
-        }
+		"geode.node-ids": ">=1.21.1"
 	},
 	"tags": [
 		"editor",
@@ -98,6 +93,20 @@
             "control": {
                 "slider": true
             }
+        },
+        "keybinds-title": {
+            "type": "title",
+            "name": "Base Keybind Settings"
+        },
+        "renderpast-keybind": { 
+            "name": "Render Past Frames",
+            "type": "keybind",
+            "default": "F9"
+        },
+        "renderfuture-keybind": { 
+            "name": "Render Future Frames",
+            "type": "keybind",
+            "default": "F10"
         }
-    }
+    }   
 }

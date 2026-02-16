@@ -12,8 +12,9 @@ This mod brings the popular onion skin animation tool to Geometry Dash using edi
 To use, simply toggle the onion button found next to the editor layer controls.
 
 ## Custom Keybinds
+Because `F9` is a vanilla keybind now, the `Shift` Modifier is added by default. The Base Keybinds can be changed however.
 This mod adds 2 new editor keybinds:
-- `F9` - toggle past frames
-- `F10` - toggle future frames
+- `Shift + F9` - toggle past frames
+- `Shift + F10` - toggle future frames
 
-These keybinds can be changed from the Custom Keybinds mod settings.
+These keybinds can be changed from the Mod settings.
