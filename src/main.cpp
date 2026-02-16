@@ -96,7 +96,7 @@ class $modify(myEditorUI, EditorUI) {
 		
         return true;
     }
-    
+
     void keyDown(cocos2d::enumKeyCodes key, double dt) {
         auto pas = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
         auto fut = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
@@ -264,29 +264,3 @@ public:
 };
 
 
-
-/*
-$execute {
-    
-    
-    
-	listenForKeybindSettingPresses("renderpast-keybind", [](Keybind const& keybind, bool down, bool repeat) {
-		if (CCDirector::get()->getRunningScene()->getChildByID("LevelEditorLayer") != nullptr) {
-			if (down && !repeat) {
-				onRPKeybind();
-			}
-		}
-	});
-
-    
-	listenForKeybindSettingPresses("renderfuture-keybind", [](Keybind const& keybind, bool down, bool repeat) {
-		if (CCDirector::get()->getRunningScene()->getChildByID("LevelEditorLayer") != nullptr) {
-			if (down && !repeat) {
-				onRFKeybind();
-			}
-		}
-	});
-    
-}
-
-*/
