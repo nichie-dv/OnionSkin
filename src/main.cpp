@@ -169,8 +169,8 @@ class $modify(myEditorUI, EditorUI) {
 class $modify(MyGameObject, GameObject) {
 public:
     void updateMainColor(const ccColor3B& color) {
-        
-        if (!EditorUI::get();) {
+        auto ui = EditorUI::get();
+        if (!ui) {
             GameObject::updateMainColor(color);
             return;
         }
