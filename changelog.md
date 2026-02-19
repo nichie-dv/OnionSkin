@@ -12,5 +12,5 @@
 - geode 5.0.0-beta.2 update + bindings fix
 # 1.2.1
 - compatability bugfix
-# 1.2.2
+# 1.2.3
 - geode 5.0.0-beta.3 update + cleanup
