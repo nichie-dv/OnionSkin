@@ -107,16 +107,17 @@ class $modify(myEditorUI, EditorUI) {
     }
     
 
-    void keyDown(cocos2d::enumKeyCodes key, double dt) {
+    void keyDown(cocos2d::enumKeyCodes key, double timestamp) {
         auto pas = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderpast-keybind");
         auto fut = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("renderfuture-keybind");
 
         if (key == enumKeyCodes::KEY_Shift || key == enumKeyCodes::KEY_LeftShift || key == enumKeyCodes::KEY_RightShift) onionSkin->shiftModifier = true;
         
+        // Override vanilla keybinds
         if (key == pas.back().key && onionSkin->shiftModifier) return; 
         if (key == fut.back().key && onionSkin->shiftModifier) return;
         
-		EditorUI::keyDown(key, dt);
+		EditorUI::keyDown(key, timestamp);
 		if (!onionSkin->playtesting || getChildByID("position-slider")->isVisible()) {
 			onionSkin->LayerToggle->setVisible(true);
 		}
