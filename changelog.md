@@ -1,4 +1,4 @@
-# 1.2.5
+# 1.2.6
 - geode v5 update
 # 1.2.4
 - version bump
