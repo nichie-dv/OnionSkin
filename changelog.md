@@ -1,7 +1,8 @@
+# 1.2.7
+- cast fixes
+- misc bugfixes
 # 1.2.6
 - geode v5 update
-# 1.2.4
-- version bump
 # 1.2.3
 - geode 5.0.0-beta.3 update + cleanup
 # 1.2.1

@@ -177,7 +177,7 @@ public:
         }
 
         bool isSelected = ui->m_selectedObjects->containsObject(
-            reinterpret_cast<cocos2d::CCObject*>(this)
+            static_cast<cocos2d::CCObject*>(this)
         );
         
         if (onionSkin->onionEnabled && !isSelected) {       
@@ -210,7 +210,7 @@ public:
         }
 
         bool isSelected = ui->m_selectedObjects->containsObject(
-            reinterpret_cast<cocos2d::CCObject*>(this)
+            static_cast<cocos2d::CCObject*>(this)
         );
 
         if (onionSkin->onionEnabled && !isSelected) {
@@ -241,7 +241,7 @@ public:
         }
 
         bool isSelected = ui->m_selectedObjects->containsObject(
-            reinterpret_cast<cocos2d::CCObject*>(this)
+            static_cast<cocos2d::CCObject*>(this)
         );
 
         if (onionSkin->onionEnabled && !isSelected) {
