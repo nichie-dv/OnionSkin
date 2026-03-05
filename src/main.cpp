@@ -42,7 +42,10 @@ void onRFKeybind() {
 
 #include <Geode/modify/EditorUI.hpp>
 class $modify(myEditorUI, EditorUI) {
-
+    struct Fields {
+        geode::ListenerHandle* m_rpListener = nullptr;
+        geode::ListenerHandle* m_rfListener = nullptr;
+    };
 
 
     static void onModify(auto& self) {
@@ -54,11 +57,11 @@ class $modify(myEditorUI, EditorUI) {
             return false;
 
 
-        listenForKeybindSettingPresses("renderpast-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+        m_fields->m_rpListener = listenForKeybindSettingPresses("renderpast-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (!down || repeat) return;
             onRPKeybind();
         });
-        listenForKeybindSettingPresses("renderfuture-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+        m_fields->m_rfListener = listenForKeybindSettingPresses("renderfuture-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (!down || repeat) return;
             onRFKeybind();
         });
