@@ -723,7 +723,7 @@ void onOSKeybind() {
     }
 
     
-    auto alert = TextAlertPopup::create("Onion Skin: " + std::string(onionSkin->onionEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
+    auto alert = TextAlertPopup::create("Onion Skin: " + std::string(onionSkin->onionEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont.fnt");
 
     alert->setAlertPosition( 
         { 0.f, 1.f },
@@ -741,7 +741,7 @@ void onPBKeybind() {
     }
 
     
-    auto alert = TextAlertPopup::create("Animation Playback: " + std::string(onionSkin->playbackEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
+    auto alert = TextAlertPopup::create("Animation Playback: " + std::string(onionSkin->playbackEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont.fnt");
 
     alert->setAlertPosition( 
         { 0.f, 1.f },
@@ -760,7 +760,7 @@ void onRPKeybind() {
 
     
     Mod::get()->setSettingValue<bool>("show-past", onionSkin->renderPast);
-    auto alert = TextAlertPopup::create("Past Frames: " + std::string(onionSkin->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
+    auto alert = TextAlertPopup::create("Past Frames: " + std::string(onionSkin->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont.fnt");
 
     alert->setAlertPosition( 
         { 0.f, 1.f },
@@ -779,7 +779,7 @@ void onRFKeybind() {
 
     
     Mod::get()->setSettingValue<bool>("show-future", onionSkin->renderFuture);
-    auto alert = TextAlertPopup::create("Future Frames: " + std::string(onionSkin->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
+    auto alert = TextAlertPopup::create("Future Frames: " + std::string(onionSkin->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont.fnt");
 
     alert->setAlertPosition( 
         { 0.f, 1.f },
@@ -1042,7 +1042,6 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->settingsPopup = popup;
         auto winSize = CCDirector::get()->getWinSize();
         popup->setPosition({winSize.width / 2, winSize.height / 2});
-        //popup->show();
         this->addChild(popup);
     }
 
