@@ -18,7 +18,9 @@ using namespace geode::prelude;
 //to activate 2n times, cancelling each other out
 static OnionSkin* onionSkin = nullptr;
 
+//I'm sorry for the length but i didn't see a use for adding other source files especially since managing onionSkin between them wouldve added so much more time to development
 
+//I added these seperators so i could see noticable gaps on my scroll bar to the right in vsc ->
 // ---------------------- Popup Scrolling Layer Entries
 
 
@@ -27,7 +29,7 @@ static OnionSkin* onionSkin = nullptr;
 
 
 
-
+//VVVV this is a comment for me. when i hover over OSPSettingEntry::create it tells me this VVVV
 
 //Create an entry with a button. If using a toggler, wrap it in CCMenuItemExt first
 OSPSettingEntry* OSPSettingEntry::create(CCMenuItemSpriteExtra* button, std::string labelText) {
@@ -220,8 +222,6 @@ void OSPSettingEntry::setInfo(std::string infoHeader, std::string infoLabel) {
 
 
 // ---------------------- Popup Stuff
-
-
 
 
 void OSPopup::toggleOnion(CCObject* sender) {
@@ -1164,7 +1164,7 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->timestampLabel->setID("playback-timestamp"_spr);
         onionSkin->timestampLabel->setAnchorPoint({0, 0.5});
         onionSkin->timestampLabel->setScale(0.5);
-        onionSkin->timestampLabel->setZOrder(9999);
+        onionSkin->timestampLabel->setZOrder(9998);
         onionSkin->timestampLabel->setPosition({70, winSize.height - (onionSkin->timestampLabel->getScaledContentHeight() / 2)});
         this->addChild(onionSkin->timestampLabel);
         onionSkin->timestampLabel->setVisible(onionSkin->showTimestamp);
@@ -1174,7 +1174,7 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->frameCountLabel->setID("playback-frame-count"_spr);
         onionSkin->frameCountLabel->setAnchorPoint({0, 0.5});
         onionSkin->frameCountLabel->setScale(0.5);
-        onionSkin->frameCountLabel->setZOrder(9999);
+        onionSkin->frameCountLabel->setZOrder(9998);
         onionSkin->frameCountLabel->setPosition({45, winSize.height - (onionSkin->frameCountLabel->getScaledContentHeight() / 2)});
         this->addChild(onionSkin->frameCountLabel);
         onionSkin->frameCountLabel->setVisible(onionSkin->showTimestamp);
@@ -1292,11 +1292,13 @@ class $modify(myEditorUI, EditorUI) {
     void onPlaytest(cocos2d::CCObject* sender) {
         EditorUI::onPlaytest(sender);
         onionSkin->playtesting = true;
+        onionSkin->LayerToggle->setVisible(false);
     }
 
     void onStopPlaytest(cocos2d::CCObject* sender) {
         EditorUI::onStopPlaytest(sender);
         onionSkin->playtesting = false;
+        onionSkin->LayerToggle->setVisible(true);
     }
 
     void showUI(bool show) {
@@ -1364,9 +1366,6 @@ class $modify(myEditorUI, EditorUI) {
 
 
 // ---------------------- GameObject Modification
-
-
-
 
 
 
