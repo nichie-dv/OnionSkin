@@ -1,6 +1,7 @@
 # v1.3.2
 - Toggler visibility fixes
 - Keybind leak fixed
+- Code fixes
 
 # 1.3.1
 - Animation Playback

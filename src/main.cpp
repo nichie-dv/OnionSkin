@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/loader/SettingV3.hpp>
 #include "main.hpp"
+#include "OSPopup.hpp"
 
 //These values get overwritten the first time theyre tweaked by the user
 #define PLAYBACK_END 15
@@ -31,196 +32,6 @@ static OnionSkin* onionSkin = nullptr;
 
 //VVVV this is a comment for me. when i hover over OSPSettingEntry::create it tells me this VVVV
 
-//Create an entry with a button. If using a toggler, wrap it in CCMenuItemExt first
-OSPSettingEntry* OSPSettingEntry::create(CCMenuItemSpriteExtra* button, std::string labelText) {
-    auto ret = new OSPSettingEntry();
-    if (ret->init()) {
-        ret->autorelease();
-        
-        ret->mainButton = button;
-
-        ret->setLayout(AxisLayout::create()
-            ->setAutoGrowAxis(false)
-            ->setAutoScale(false)
-            ->setAxisAlignment(AxisAlignment::Start)
-        );
-        ret->setPosition({0, 0});
-
-        ret->addChild(ret->mainButton);
-        ret->label = CCLabelBMFont::create(labelText.c_str(), "bigFont.fnt");
-
-        ret->addChild(ret->label);
-        ret->updateLabelScale();
-
-
-
-        ret->mainButton->setID("button");
-        ret->label->setID("label");
-
-        return ret;
-    }
-    delete ret;
-    return nullptr;
-}
-
-//Create an entry with a slider
-#include <Geode/ui/SliderNode.hpp>
-OSPSettingEntry* OSPSettingEntry::create(geode::SliderNode* slider) {
-    auto ret = new OSPSettingEntry();
-    if (ret->init()) {
-        ret->autorelease();
-        ret->xOffset = 10;
-        
-        slider->setScale(0.7);
-        ret->mainButton = slider;
-
-        ret->setLayout(AxisLayout::create()
-            ->setAutoGrowAxis(false)
-            ->setAutoScale(false)
-            ->setAxisAlignment(AxisAlignment::Start)
-        );
-        ret->setPosition({0, 0});
-
-        ret->addChild(ret->mainButton);
-        ret->updateLabelScale();
-        
-
-
-        ret->mainButton->setID("button");
-
-        return ret;
-    }
-    delete ret;
-    return nullptr;
-}
-
-//Create a title
-OSPSettingEntry* OSPSettingEntry::createTitle(std::string labelText) {
-    auto ret = new OSPSettingEntry();
-    if (ret->init()) {
-        ret->autorelease();
-
-        ret->setLayout(AxisLayout::create()
-            ->setAutoGrowAxis(false)
-            ->setAutoScale(false)
-            ->setAxisAlignment(AxisAlignment::Start)
-        );
-        ret->setPosition({0, 0});
-        ret->label = CCLabelBMFont::create(labelText.c_str(), "goldFont.fnt");
-        ret->label->setScale(190 / (ret->label->getContentWidth()  / ret->label->getScale()));
-
-        ret->addChild(ret->label);
-        ret->updateLayout();
-        //ret->updateLabelScale();
-
-        ret->label->setID("label");
-
-        return ret;
-    }
-    delete ret;
-    return nullptr;
-}
-
-//Create only a label
-OSPSettingEntry* OSPSettingEntry::create(std::string labelText) {
-    auto ret = new OSPSettingEntry();
-    if (ret->init()) {
-        ret->autorelease();
-
-        ret->setLayout(AxisLayout::create()
-            ->setAutoGrowAxis(false)
-            ->setAutoScale(false)
-            ->setAxisAlignment(AxisAlignment::Start)
-        );
-        ret->setPosition({0, 0});
-        ret->label = CCLabelBMFont::create(labelText.c_str(), "bigFont.fnt");
-        ret->label->setScale(0.75);
-        ret->label->setScale(190 / (ret->label->getContentWidth()  / ret->label->getScale()));
-
-        ret->addChild(ret->label);
-        ret->updateLayout();
-
-        ret->label->setID("label");
-
-        return ret;
-    }
-    delete ret;
-    return nullptr;
-}
-
-
-//Update label scale so it doesnt go out of scope
-void OSPSettingEntry::updateLabelScale() {
-    float totalWidth = 190;
-    float gap = 5;
-
-    float usedWidth = 0;
-
-    if (mainButton) {
-        usedWidth += mainButton->getContentWidth() / mainButton->getScale();
-        usedWidth += gap;
-    }
-        
-
-
-    if (infoIcon != nullptr) {
-        usedWidth += infoIcon->getContentWidth() / infoIcon->getScale();
-        usedWidth += gap;
-    }
-
-    float availableWidth = totalWidth - usedWidth - gap;
-    if (label != nullptr) {
-        float labelWidth = label->getContentWidth() / label->getScale();
-
-        if (labelWidth > availableWidth) {
-            float scale = std::max(0.3f, availableWidth / labelWidth);
-            label->setScale(scale);
-        } else {
-            label->setScale(1);
-        }
-    }
-    
-    this->updateLayout();
-
-    if (mainButton != nullptr) mainButton->setPositionX(mainButton->getPositionX() + xOffset);
-    if (label != nullptr) label->setPositionX(label->getPositionX() + xOffset);
-    if (infoIcon != nullptr) infoIcon->setPositionX(infoIcon->getPositionX() + xOffset);
-}
-
-//Just because mainButton is protected
-void OSPSettingEntry::updateMainNode(CCNode* node) {
-    mainButton = node;
-}
-
-//Create an info button and add it to the entry
-void OSPSettingEntry::setInfo(std::string infoHeader, std::string infoLabel) {
-    auto sprite = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-    sprite->setScale(0.75);
-    this->infoIcon = CCMenuItemExt::createSpriteExtra(
-        sprite,
-        [infoHeader, infoLabel](CCObject*) {
-            FLAlertLayer::create(
-                infoHeader.c_str(),
-                infoLabel,
-                "OK"
-            )->show();
-        }
-    );
-    
-    this->addChild(this->infoIcon);
-    this->updateLabelScale();
-}
-
-
-
-
-
-
-
-
-
-
-
 // ---------------------- Popup Stuff
 
 
@@ -233,24 +44,13 @@ void OSPopup::togglePlayback(CCObject* sender) {
     onionSkin->playbackEnabled = !onionSkin->playbackEnabled;
 }
 
-void OSPopup::onUseCurrent(CCObject* sender) {
-    int val2 = frameRange[0];
-    if (currentLayer <= val2) {
-        currentLayer = val2 + 1;
-    }
-    this->frameRange[1] = currentLayer;
-    if (!inputNodeE->getString().empty())
-        inputNodeE->setString(numToString<int>(currentLayer));
-    else
-        inputNodeE->setPlaceholder(numToString<int>(currentLayer));
-    Mod::get()->setSavedValue<std::vector<int>>("playback-range", frameRange);
-}
+
 
 
 bool OSPopup::init() {
-    if (!CCLayer::init()) return false;
-
-
+    if (!Popup::init({380, 260})) return false;
+    
+    
     frameRange = Mod::get()->getSavedValue<std::vector<int>>("playback-range", {0, PLAYBACK_END});
     pbFPS = Mod::get()->getSavedValue<int>("playback-speed", PLAYBACK_SPEED);
 
@@ -258,9 +58,10 @@ bool OSPopup::init() {
     Mod::get()->setSavedValue<int>("playback-speed", pbFPS);
     
 
-    CCTouchDispatcher::get()->registerForcePrio(this, 2);
     auto winSize = CCDirector::get()->getWinSize();
-    this->setID("onion-skin-menu"_spr);  
+    this->setID("onion-skin-menu"_spr);
+    
+    
     
     this->setZOrder(100);
     auto fadeLayer = CCSprite::create("square.png");
@@ -269,6 +70,7 @@ bool OSPopup::init() {
     fadeLayer->setColor({0, 0, 0});
     fadeLayer->setOpacity(0);
     fadeLayer->setZOrder(1);
+    
     fadeLayer->setID("fade-node");
 
     auto bgFadeIn = CCFadeTo::create(0.1f, 150);
@@ -280,61 +82,40 @@ bool OSPopup::init() {
     fadeLayer->runAction(bgSeq);
     this->addChildAtPosition(fadeLayer, Anchor::Center);
 
-    auto popupBase = NineSlice::create("GJ_square01.png");
-    popupBase->setID("popup-base");
-    popupBase->setContentSize({380, 260});
-    popupBase->setScale(0);
+    this->m_mainLayer->setID("popup-base");
+    this->m_mainLayer->setScale(0);
 
     auto ppScaleIn = CCScaleTo::create(0.5f, 1);
     auto eOut = CCEaseElasticOut::create(ppScaleIn, 0.6f);
 
+    /*
     auto ppSeq = CCSequence::create(
         eOut,
         nullptr
     );
+    */
+    
 
-    popupBase->runAction(ppSeq);
-    popupBase->setZOrder(5);
+    this->m_mainLayer->runAction(eOut);
+    this->m_mainLayer->setZOrder(5);
 
-    this->addChildAtPosition(popupBase, Anchor::Center);
+    //this->addChildAtPosition(popupBase, Anchor::Center);
 
     popupExitMenu = CCMenu::create();
     popupExitMenu->setZOrder(100);
     popupExitMenu->setID("exit-button-menu");
     
     
+    this->m_mainLayer->addChildAtPosition(popupExitMenu, Anchor::Center);
 
-    auto exitButtonComp = CCNode::create();
-    auto exitSpriteBase = CCSprite::createWithSpriteFrameName("geode.loader/baseCircle_BigAlt_Green.png");
-    auto exitSpriteIcon = CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png");
-    
-    auto center = ccp(
-        exitSpriteBase->getContentSize().width / 2,
-        exitSpriteBase->getContentSize().height / 2
-    );
-
-    popupBase->addChildAtPosition(popupExitMenu, Anchor::Center);
-
-
-    exitSpriteBase->setPosition(center);
-    exitSpriteIcon->setPosition(center);
-    exitSpriteIcon->setScale(1.15f);
-
-    exitButtonComp->addChild(exitSpriteBase);
-    exitButtonComp->addChild(exitSpriteIcon);
-    
-    exitButtonComp->setScale(0.85f);
-
-    auto exitBtn = CCMenuItemExt::createSpriteExtra(exitButtonComp, [this](auto btn) {
+    auto exitBtn = CCMenuItemExt::createSpriteExtra(CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png"), [this](auto btn) {
         this->onBack(btn);
     });
-    exitBtn->setContentSize(ccp(
-        exitSpriteBase->getContentWidth() * 0.85f,
-        exitSpriteBase->getContentHeight() * 0.85f
-    ));
+
+    
     exitBtn->setAnchorPoint((ccp(0.5f, 0.5f)));
-    popupExitMenu->setContentWidth(popupBase->getContentWidth() + (exitSpriteBase->getContentWidth() / 2));
-    popupExitMenu->setContentHeight(popupBase->getContentHeight() + (exitSpriteBase->getContentHeight() / 2));
+    popupExitMenu->setContentWidth(this->m_bgSprite->getContentWidth() + (exitBtn->getContentWidth() / 2));
+    popupExitMenu->setContentHeight(this->m_bgSprite->getContentHeight() + (exitBtn->getContentHeight() / 2));
     
     popupExitMenu->addChildAtPosition(exitBtn, Anchor::TopLeft, ccp(15, -15));
     
@@ -348,7 +129,7 @@ bool OSPopup::init() {
 
     popupMainMenu->setLayout(AxisLayout::create(Axis::Column)->setGap(25)->setAxisReverse(true));
 
-    popupBase->addChildAtPosition(popupMainMenu, Anchor::Left, {25, -15});
+    this->m_bgSprite->addChildAtPosition(popupMainMenu, Anchor::Left, {25, -15});
 
     //Enable Check
     {   
@@ -361,14 +142,9 @@ bool OSPopup::init() {
         toggleMenu->setAnchorPoint({0, 0});  
         toggleMenu->ignoreAnchorPointForPosition(false);
 
-
-        auto offSpr = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-        auto onSpr = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"); 
-
-
         OStoggle = CCMenuItemToggler::create(
-            offSpr,
-            onSpr,
+            CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png"),
+            CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"),
             this,
             menu_selector(OSPopup::toggleOnion)
         );
@@ -396,14 +172,9 @@ bool OSPopup::init() {
         toggleMenu->setAnchorPoint({0, 0});  
         toggleMenu->ignoreAnchorPointForPosition(false);
 
-
-        auto offSpr = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-        auto onSpr = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"); 
-
-
         PBtoggle = CCMenuItemToggler::create(
-            offSpr,
-            onSpr,
+            CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png"),
+            CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"),
             this,
             menu_selector(OSPopup::togglePlayback)
         );
@@ -431,10 +202,6 @@ bool OSPopup::init() {
         textMenu->setAnchorPoint({0, 0.5});  
         textMenu->ignoreAnchorPointForPosition(false);
         textMenu->setLayout(AxisLayout::create()->setAutoGrowAxis(true)->setGap(10));
-
-
-        auto offSpr = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-        auto onSpr = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"); 
 
         inputNodeF = TextInput::create(30, numToString<int>(frameRange[0]));
         inputNodeF->setLabel("start");
@@ -499,10 +266,6 @@ bool OSPopup::init() {
         textMenu->setAnchorPoint({0.5, 0.5});  
         textMenu->ignoreAnchorPointForPosition(false);
         textMenu->setLayout(AxisLayout::create()->setAutoGrowAxis(true));
-
-
-        auto offSpr = CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png");
-        auto onSpr = CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"); 
 
         inputNodeFPS = TextInput::create(30, numToString<int>(pbFPS));
         inputNodeFPS->setFilter("0123456789");
@@ -904,7 +667,7 @@ bool OSPopup::init() {
     scrollLayer->ignoreAnchorPointForPosition(false);
 
 
-    popupBase->addChildAtPosition(scrollBG, Anchor::Center, {68, 0});
+    this->m_bgSprite->addChildAtPosition(scrollBG, Anchor::Center, {68, 0});
     
 
     
@@ -914,20 +677,11 @@ bool OSPopup::init() {
     this->setKeypadEnabled(true);
     this->setTouchEnabled(true);
 
+    this->m_mainLayer->setPosition({winSize.width / 2, winSize.height / 2});
+
     return true;
 }
 
-
-
-
-void OSPopup::registerWithTouchDispatcher() {
-    CCTouchDispatcher::get()->addTargetedDelegate(this, -500, true);
-}
-
-
-OSPopup::~OSPopup() {
-    CCTouchDispatcher::get()->unregisterForcePrio(this);
-}
 
 
 void OSPopup::onBack(CCObject*) {   
@@ -943,19 +697,7 @@ void OSPopup::onBack(CCObject*) {
     this->removeFromParent();
 }
 
-void OSPopup::keyBackClicked() {
-    this->onBack(nullptr);
-}
 
-OSPopup* OSPopup::create() {
-    auto ret = new OSPopup();
-    if (ret->init()) {
-        ret->autorelease();
-        return ret;
-    }
-    delete ret;
-    return nullptr;
-};
 
 
 
@@ -1020,7 +762,7 @@ void onRPKeybind() {
     Mod::get()->setSettingValue<bool>("show-past", onionSkin->renderPast);
     auto alert = TextAlertPopup::create("Past Frames: " + std::string(onionSkin->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
-    alert->setAlertPosition( // Great value
+    alert->setAlertPosition( 
         { 0.f, 1.f },
         { 20.f, -20.f }
     );
@@ -1150,7 +892,6 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->timestampLabel->setZOrder(9998);
         onionSkin->timestampLabel->setPosition({70, winSize.height - (onionSkin->timestampLabel->getScaledContentHeight() / 2)});
         this->addChild(onionSkin->timestampLabel);
-        onionSkin->timestampLabel->setVisible(onionSkin->showTimestamp);
 
 
         onionSkin->frameCountLabel = CCLabelBMFont::create("0/0", "chatFont.fnt");
@@ -1160,7 +901,6 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->frameCountLabel->setZOrder(9998);
         onionSkin->frameCountLabel->setPosition({45, winSize.height - (onionSkin->frameCountLabel->getScaledContentHeight() / 2)});
         this->addChild(onionSkin->frameCountLabel);
-        onionSkin->frameCountLabel->setVisible(onionSkin->showTimestamp);
     
         
         
@@ -1254,6 +994,7 @@ class $modify(myEditorUI, EditorUI) {
             onionSkin->LayerToggle = CCMenuItemSpriteExtra::create(onionSkin->toggler, this, menu_selector(myEditorUI::onOnionButton));
 
             //Add toggle button to layer menu
+            this->m_uiItems->addObject(onionSkin->LayerToggle);
             layerMenu->addChild(onionSkin->LayerToggle);
             layerMenu->updateLayout();
 
@@ -1269,38 +1010,6 @@ class $modify(myEditorUI, EditorUI) {
         return true;
     }
     
-
-    void keyDown(cocos2d::enumKeyCodes key, double timestamp) {
-		EditorUI::keyDown(key, timestamp);
-
-		if (!onionSkin->playtesting && getChildByID("position-slider")->isVisible()) {
-			onionSkin->LayerToggle->setVisible(true);
-		}
-		else {
-			onionSkin->LayerToggle->setVisible(false);
-		}   
-	}
-
-    void keyUp(enumKeyCodes key, double timestamp) {
-        EditorUI::keyUp(key, timestamp);
-    }
-
-    void onPlaytest(cocos2d::CCObject* sender) {
-        EditorUI::onPlaytest(sender);
-        onionSkin->playtesting = true;
-        onionSkin->LayerToggle->setVisible(false);
-    }
-
-    void onStopPlaytest(cocos2d::CCObject* sender) {
-        EditorUI::onStopPlaytest(sender);
-        onionSkin->playtesting = false;
-        onionSkin->LayerToggle->setVisible(true);
-    }
-
-    void showUI(bool show) {
-		EditorUI::showUI(show);
-		onionSkin->LayerToggle->setVisible(show);
-	}
 
     void updatePlaybackVal(float dt) {
         updatePlayback(static_cast<double>(dt));
@@ -1333,6 +1042,7 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->settingsPopup = popup;
         auto winSize = CCDirector::get()->getWinSize();
         popup->setPosition({winSize.width / 2, winSize.height / 2});
+        //popup->show();
         this->addChild(popup);
     }
 

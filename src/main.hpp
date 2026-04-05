@@ -1,73 +1,13 @@
 #pragma once
+
 #include <Geode/Geode.hpp>
 #include <Geode/ui/SliderNode.hpp>
 
 #include <utility>
 
+#include "OSPopup.hpp"
+
 using namespace geode::prelude;
-
-
-
-class OSPSettingEntry : public CCMenu {
-    public:
-    static OSPSettingEntry* create(CCMenuItemSpriteExtra* button, std::string label);
-    static OSPSettingEntry* create(SliderNode* slider);
-
-    static OSPSettingEntry* createTitle(std::string label);
-    static OSPSettingEntry* create(std::string label);
-    
-    void setInfo(std::string infoHeader, std::string infoLabel);
-    void updateLabelScale();
-    void updateMainNode(CCNode* node);
-
-    protected:
-    float xOffset = 0;
-    CCNode* mainButton = nullptr;
-    CCLabelBMFont* label = nullptr;
-    CCMenuItemSpriteExtra* infoIcon = nullptr;
-    
-};
-
-class OSPopup : public cocos2d::CCLayer {
-
-    public:
-    static OSPopup* create();
-    cocos2d::CCMenu* popupExitMenu;
-    cocos2d::CCMenu* popupMainMenu;
-
-    CCMenuItemToggler* OStoggle = nullptr;
-    CCMenuItemToggler* PBtoggle = nullptr;
-    TextInput* inputNodeF = nullptr;
-    TextInput* inputNodeE = nullptr;
-    TextInput* inputNodeFPS = nullptr;
-    CCMenuItemSpriteExtra* useCurrentButton = nullptr;
-
-    CCMenuItemToggler* rpSetting = nullptr;
-    CCMenuItemToggler* rfSetting = nullptr;
-
-    TextInput* frameDepthInput = nullptr;
-    TextInput* opacityMaxInput = nullptr;
-    TextInput* opacityMinInput = nullptr;
-
-    std::vector<int> frameRange;
-    int pbFPS;
-
-
-    protected:
-    bool init() override;
-    void keyBackClicked() override;
-    void onBack(CCObject*);
-
-    void toggleOnion(CCObject* sender);
-    void togglePlayback(CCObject* sender);
-    void onUseCurrent(CCObject* sender);
-   
-    void registerWithTouchDispatcher() override;
-    ~OSPopup();
-
-    int currentLayer = 1;
-
-};
 
 struct OnionSkin {
     CCMenuItemSpriteExtra* LayerToggle = nullptr;
