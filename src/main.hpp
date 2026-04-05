@@ -100,6 +100,7 @@ struct OnionSkin {
     
 
     int currentLayer = -1;
+
     //Playback settings
     std::pair<int, int> animBounds;
     int fps;
@@ -108,14 +109,11 @@ struct OnionSkin {
     int pbFrameNum = 0; //same as current layer in the animation
 
 
-    //Keybind stuffs
-    bool shiftModifier = false;
     bool playtesting = false;
 
     bool kbRegistered = false;
     
 };
-
 
 
 //HORRIBLE things are happening here.

@@ -1,3 +1,11 @@
+# 1.3.0
+- Animation Playback
+- Access settings from in editor
+- Better keybind customization
+- ACTUALLY fixed memory leaks
+- More settings and customization
+- Playback label
+
 # 1.2.8
 - Memory leak fix
 

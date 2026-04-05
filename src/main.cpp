@@ -5,17 +5,31 @@
 //These values get overwritten the first time theyre tweaked by the user
 #define PLAYBACK_END 15
 #define PLAYBACK_SPEED 10
+
+
+//This one does not.
 #define MAX_FRAME_DEPTH 50
 
 using namespace geode::prelude;
 
 
-
+//Fixed this leaking because new keybinds kept being
+//created every time you entered the editor, causing keybinds on every other entry
+//to activate 2n times, cancelling each other out
 static OnionSkin* onionSkin = nullptr;
 
 
+// ---------------------- Popup Scrolling Layer Entries
 
-//Setting Entry
+
+
+
+
+
+
+
+
+//Create an entry with a button. If using a toggler, wrap it in CCMenuItemExt first
 OSPSettingEntry* OSPSettingEntry::create(CCMenuItemSpriteExtra* button, std::string labelText) {
     auto ret = new OSPSettingEntry();
     if (ret->init()) {
@@ -47,6 +61,7 @@ OSPSettingEntry* OSPSettingEntry::create(CCMenuItemSpriteExtra* button, std::str
     return nullptr;
 }
 
+//Create an entry with a slider
 #include <Geode/ui/SliderNode.hpp>
 OSPSettingEntry* OSPSettingEntry::create(geode::SliderNode* slider) {
     auto ret = new OSPSettingEntry();
@@ -77,6 +92,7 @@ OSPSettingEntry* OSPSettingEntry::create(geode::SliderNode* slider) {
     return nullptr;
 }
 
+//Create a title
 OSPSettingEntry* OSPSettingEntry::createTitle(std::string labelText) {
     auto ret = new OSPSettingEntry();
     if (ret->init()) {
@@ -103,6 +119,7 @@ OSPSettingEntry* OSPSettingEntry::createTitle(std::string labelText) {
     return nullptr;
 }
 
+//Create only a label
 OSPSettingEntry* OSPSettingEntry::create(std::string labelText) {
     auto ret = new OSPSettingEntry();
     if (ret->init()) {
@@ -120,7 +137,6 @@ OSPSettingEntry* OSPSettingEntry::create(std::string labelText) {
 
         ret->addChild(ret->label);
         ret->updateLayout();
-        //ret->updateLabelScale();
 
         ret->label->setID("label");
 
@@ -131,7 +147,7 @@ OSPSettingEntry* OSPSettingEntry::create(std::string labelText) {
 }
 
 
-
+//Update label scale so it doesnt go out of scope
 void OSPSettingEntry::updateLabelScale() {
     float totalWidth = 190;
     float gap = 5;
@@ -169,10 +185,12 @@ void OSPSettingEntry::updateLabelScale() {
     if (infoIcon != nullptr) infoIcon->setPositionX(infoIcon->getPositionX() + xOffset);
 }
 
+//Just because mainButton is protected
 void OSPSettingEntry::updateMainNode(CCNode* node) {
     mainButton = node;
 }
 
+//Create an info button and add it to the entry
 void OSPSettingEntry::setInfo(std::string infoHeader, std::string infoLabel) {
     auto sprite = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
     sprite->setScale(0.75);
@@ -195,7 +213,17 @@ void OSPSettingEntry::setInfo(std::string infoHeader, std::string infoLabel) {
 
 
 
-//Popup
+
+
+
+
+
+
+// ---------------------- Popup Stuff
+
+
+
+
 void OSPopup::toggleOnion(CCObject* sender) {
     onionSkin->onionEnabled = !onionSkin->onionEnabled;
     onionSkin->toggler->toggle(onionSkin->onionEnabled);
@@ -217,6 +245,7 @@ void OSPopup::onUseCurrent(CCObject* sender) {
         inputNodeE->setPlaceholder(numToString<int>(currentLayer));
     Mod::get()->setSavedValue<std::vector<int>>("playback-range", frameRange);
 }
+
 
 bool OSPopup::init() {
     if (!CCLayer::init()) return false;
@@ -530,10 +559,8 @@ bool OSPopup::init() {
     );
 
 
-
-
-
     //Adding Settings to popup
+
 
     //Color Title
     {
@@ -865,12 +892,6 @@ bool OSPopup::init() {
         label->updateLabelScale();
     }
 
-
-
-
-
-
-
     
     scrollLayer->m_contentLayer->addChildAtPosition(menu, Anchor::Center);
     scrollLayer->m_contentLayer->setContentHeight(menu->getContentHeight() + 15);
@@ -903,10 +924,10 @@ void OSPopup::registerWithTouchDispatcher() {
     CCTouchDispatcher::get()->addTargetedDelegate(this, -500, true);
 }
 
+
 OSPopup::~OSPopup() {
     CCTouchDispatcher::get()->unregisterForcePrio(this);
 }
-
 
 
 void OSPopup::onBack(CCObject*) {   
@@ -940,6 +961,18 @@ OSPopup* OSPopup::create() {
 
 
 
+
+
+
+
+// ---------------------- Keybind Stuff
+
+
+
+
+
+
+
 void onOSKeybind() {
     onionSkin->onionEnabled = !onionSkin->onionEnabled;
     onionSkin->toggler->toggle(onionSkin->onionEnabled);
@@ -947,7 +980,7 @@ void onOSKeybind() {
         onionSkin->settingsPopup->OStoggle->toggle(onionSkin->onionEnabled);
     }
 
-    // Change menu setting accordingly
+    //Change menu setting accordingly
     auto alert = TextAlertPopup::create("Onion Skin: " + std::string(onionSkin->onionEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
     alert->setAlertPosition( 
@@ -965,7 +998,7 @@ void onPBKeybind() {
         onionSkin->settingsPopup->PBtoggle->toggle(onionSkin->playbackEnabled);
     }
 
-    // Change menu setting accordingly
+    //Change menu setting accordingly
     auto alert = TextAlertPopup::create("Animation Playback: " + std::string(onionSkin->playbackEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
     alert->setAlertPosition( 
@@ -985,7 +1018,7 @@ void onRPKeybind() {
         onionSkin->settingsPopup->rpSetting->toggle(onionSkin->renderPast);
     }
 
-    // Change menu setting accordingly
+    //Change menu setting accordingly
     Mod::get()->setSettingValue<bool>("show-past", onionSkin->renderPast);
     auto alert = TextAlertPopup::create("Past Frames: " + std::string(onionSkin->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
@@ -1004,7 +1037,7 @@ void onRFKeybind() {
         onionSkin->settingsPopup->rfSetting->toggle(onionSkin->renderFuture);
     }
 
-    // Change menu setting accordingly
+    //Change menu setting accordingly
     Mod::get()->setSettingValue<bool>("show-future", onionSkin->renderFuture);
     auto alert = TextAlertPopup::create("Future Frames: " + std::string(onionSkin->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
@@ -1018,26 +1051,40 @@ void onRFKeybind() {
 }
 
 
+
+
+
+
+
+// ---------------------- Editor Modification
+
+
+
+
+
+
+
+
 #include <Geode/modify/EditorUI.hpp>
 class $modify(myEditorUI, EditorUI) {
     struct Fields {
+        //Keybind listeners
         geode::ListenerHandle* m_osListener = nullptr;
         geode::ListenerHandle* m_pbListener = nullptr;
 
         geode::ListenerHandle* m_rpListener = nullptr;
         geode::ListenerHandle* m_rfListener = nullptr;
 
+        //Avoid duplicating listeners
         bool keybindsRegistered = false;
-        CCLabelBMFont* m_timestampLabel = nullptr;
-        CCLabelBMFont* m_frameCountLabel = nullptr;
-
     };
     
 
 
     static void onModify(auto& self) {
-        (void)self.setHookPriority("EditorUI::init", -1600); // Make late to add button to far right
+        (void)self.setHookPriority("EditorUI::init", -1600); //Make late to add button to far right
     }
+
 
     void updateTimerLabel() {
         std::string prefix = numToString<int>(onionSkin->pbFrameNum);
@@ -1117,7 +1164,7 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->timestampLabel->setID("playback-timestamp"_spr);
         onionSkin->timestampLabel->setAnchorPoint({0, 0.5});
         onionSkin->timestampLabel->setScale(0.5);
-        onionSkin->timestampLabel->setZOrder(1000);
+        onionSkin->timestampLabel->setZOrder(9999);
         onionSkin->timestampLabel->setPosition({70, winSize.height - (onionSkin->timestampLabel->getScaledContentHeight() / 2)});
         this->addChild(onionSkin->timestampLabel);
         onionSkin->timestampLabel->setVisible(onionSkin->showTimestamp);
@@ -1127,7 +1174,7 @@ class $modify(myEditorUI, EditorUI) {
         onionSkin->frameCountLabel->setID("playback-frame-count"_spr);
         onionSkin->frameCountLabel->setAnchorPoint({0, 0.5});
         onionSkin->frameCountLabel->setScale(0.5);
-        onionSkin->frameCountLabel->setZOrder(1000);
+        onionSkin->frameCountLabel->setZOrder(9999);
         onionSkin->frameCountLabel->setPosition({45, winSize.height - (onionSkin->frameCountLabel->getScaledContentHeight() / 2)});
         this->addChild(onionSkin->frameCountLabel);
         onionSkin->frameCountLabel->setVisible(onionSkin->showTimestamp);
@@ -1173,7 +1220,7 @@ class $modify(myEditorUI, EditorUI) {
         if (auto layerMenu = this->getChildByID("layer-menu")) {
             
             
-            // Get settings
+            //Get settings
             onionSkin->changeColors = Mod::get()->getSettingValue<bool>("change-colors");
             onionSkin->pastColor = Mod::get()->getSettingValue<cocos2d::ccColor3B>("past-color");
             onionSkin->futureColor = Mod::get()->getSettingValue<cocos2d::ccColor3B>("future-color");
@@ -1193,7 +1240,7 @@ class $modify(myEditorUI, EditorUI) {
                 onionSkin->pbFrameNum = onionSkin->animBounds.first;
             }
 
-            // Create toggle button
+            //Create toggle button
             auto onionOnSpr = CCSprite::create("onionBtn_on.png"_spr);
             auto onionOffSpr = CCSprite::create("onionBtn_off.png"_spr);
 
@@ -1210,13 +1257,13 @@ class $modify(myEditorUI, EditorUI) {
 
             onionSkin->LayerToggle = CCMenuItemSpriteExtra::create(onionSkin->toggler, this, menu_selector(myEditorUI::onOnionButton));
 
-            // Add toggle button to layer menu
+            //Add toggle button to layer menu
             layerMenu->addChild(onionSkin->LayerToggle);
             layerMenu->updateLayout();
 
             onionSkin->currentLayer = p0->m_currentLayer;
 
-            // Check for layer updates
+            //Check for layer updates
             schedule(schedule_selector(myEditorUI::checkLayer), 0);
             schedule(schedule_selector(myEditorUI::updatePlaybackVal), 0);
         }
@@ -1228,24 +1275,6 @@ class $modify(myEditorUI, EditorUI) {
     
 
     void keyDown(cocos2d::enumKeyCodes key, double timestamp) {
-
-        auto os = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("onion-enable-keybind");
-        auto pb = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("playback-enable-keybind");
-
-
-        auto pas = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("render-past-keybind");
-        auto fut = Mod::get()->getSettingValue<std::vector<geode::Keybind>>("render-future-keybind");
-
-        //Shift Modifier
-        if (key == enumKeyCodes::KEY_Shift || key == enumKeyCodes::KEY_LeftShift || key == enumKeyCodes::KEY_RightShift) onionSkin->shiftModifier = true;
-
-
-        // Override vanilla keybinds
-        if (onionSkin->shiftModifier) if (key == os.back().key || key == pb.back().key || key == pas.back().key || key == fut.back().key) return;
-        //Isn't it wonderful?
-        
-        
-
 		EditorUI::keyDown(key, timestamp);
 
 		if (!onionSkin->playtesting || getChildByID("position-slider")->isVisible()) {
@@ -1257,7 +1286,6 @@ class $modify(myEditorUI, EditorUI) {
 	}
 
     void keyUp(enumKeyCodes key, double timestamp) {
-        if (key == enumKeyCodes::KEY_Shift || key == enumKeyCodes::KEY_LeftShift || key == enumKeyCodes::KEY_RightShift) onionSkin->shiftModifier = false;
         EditorUI::keyUp(key, timestamp);
     }
 
@@ -1290,12 +1318,12 @@ class $modify(myEditorUI, EditorUI) {
 
     void checkLayer(float dt)
 	{
-        // I'm not really sure
+        //I'm not really sure
 		static int layer = -500;
 		if (onionSkin->LevelEditorLayer->m_currentLayer == layer)
 			return;
 
-        // Update current layer
+        //Update current layer
 		layer = onionSkin->LevelEditorLayer->m_currentLayer;
         onionSkin->currentLayer = layer;
 
@@ -1310,6 +1338,7 @@ class $modify(myEditorUI, EditorUI) {
         this->addChild(popup);
     }
 
+    //Delete listners(?)
     ~myEditorUI() {
         m_fields->m_osListener->destroy();
         delete m_fields->m_osListener;
@@ -1334,6 +1363,14 @@ class $modify(myEditorUI, EditorUI) {
 
 
 
+// ---------------------- GameObject Modification
+
+
+
+
+
+
+
 //GameObject
 #include <Geode/modify/GameObject.hpp>
 class $modify(MyGameObject, GameObject) {
@@ -1348,20 +1385,21 @@ class $modify(MyGameObject, GameObject) {
             static_cast<cocos2d::CCObject*>(this)
         );
 
+
         if (!onionSkin->playbackEnabled && onionSkin->changeColors) {
             if (onionSkin->onionEnabled && !isSelected) {       
                 ccColor3B newColor;
 
                 if (this->m_editorLayer == onionSkin->currentLayer || onionSkin->currentLayer == -1) {
-                    // Current layer
+                    //Current layer
                     newColor = color; 
                 }
                 else if (this->m_editorLayer < onionSkin->currentLayer) {
-                    // Below current layer
+                    //Below current layer
                     newColor = onionSkin->pastColor; 
                 }
                 else {
-                    // Above current layer
+                    //Above current layer
                     newColor = onionSkin->futureColor; 
                 }
             
@@ -1384,19 +1422,21 @@ class $modify(MyGameObject, GameObject) {
         bool isSelected = ui->m_selectedObjects->containsObject(
             static_cast<cocos2d::CCObject*>(this)
         );
+
+
         if (!onionSkin->playbackEnabled && onionSkin->changeColors) {
             if (onionSkin->onionEnabled && !isSelected) {
                 ccColor3B newColor;
                 if (this->m_editorLayer == onionSkin->currentLayer || onionSkin->currentLayer == -1) {
-                    // Current layer 
+                    //Current layer 
                     newColor = color; 
                 }
                 else if (this->m_editorLayer < onionSkin->currentLayer) {
-                    // Below current layer
+                    //Below current layer
                     newColor = onionSkin->pastColor; 
                 }
                 else {
-                    // Above current layer
+                    //Above current layer
                     newColor = onionSkin->futureColor; 
                 }
                 GameObject::updateSecondaryColor(newColor);
@@ -1418,15 +1458,17 @@ class $modify(MyGameObject, GameObject) {
         bool isSelected = ui->m_selectedObjects->containsObject(
             static_cast<cocos2d::CCObject*>(this)
         );
+
+
         if (!onionSkin->playbackEnabled) {
             if (onionSkin->onionEnabled && !isSelected) {
                 GLubyte newAlpha;
                 
                 if (this->m_editorLayer == onionSkin->currentLayer || onionSkin->currentLayer == -1) {   
-                    // Current layer    
+                    //Current layer    
                     newAlpha = opacity; 
                 } else {
-                    // Not current layer
+                    //Not current layer
                     int distance = std::abs(this->m_editorLayer - onionSkin->currentLayer);
                     int maxDistance = onionSkin->maxLayerDistance;
 
@@ -1438,7 +1480,7 @@ class $modify(MyGameObject, GameObject) {
                     newAlpha = static_cast<GLubyte>(minAlpha + scaleFactor * (maxAlpha - minAlpha));
                 }
                 
-                // Make invisible if it is supposed to not be visible (genius)
+                //Make invisible if it is supposed to not be visible (genius)
                 if ((!onionSkin->renderPast && this->m_editorLayer < onionSkin->currentLayer) || (!onionSkin->renderFuture && this->m_editorLayer > onionSkin->currentLayer)) {
                     newAlpha = 0;
                 }
@@ -1458,5 +1500,3 @@ class $modify(MyGameObject, GameObject) {
     }
 
 };
-
-
