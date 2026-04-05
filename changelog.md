@@ -1,3 +1,7 @@
+# v1.3.2
+- Toggler visibility fixes
+- Keybind leak fixed
+
 # 1.3.1
 - Animation Playback
 - Access settings from in editor
