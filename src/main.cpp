@@ -971,7 +971,7 @@ OSPopup* OSPopup::create() {
 
 
 
-
+//I should specify that the following code for text alert popups specifically is robtop's code. im not using notification because i want to match the style of the existing text alert popups
 
 void onOSKeybind() {
     onionSkin->onionEnabled = !onionSkin->onionEnabled;
@@ -980,7 +980,7 @@ void onOSKeybind() {
         onionSkin->settingsPopup->OStoggle->toggle(onionSkin->onionEnabled);
     }
 
-    //Change menu setting accordingly
+    
     auto alert = TextAlertPopup::create("Onion Skin: " + std::string(onionSkin->onionEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
     alert->setAlertPosition( 
@@ -998,7 +998,7 @@ void onPBKeybind() {
         onionSkin->settingsPopup->PBtoggle->toggle(onionSkin->playbackEnabled);
     }
 
-    //Change menu setting accordingly
+    
     auto alert = TextAlertPopup::create("Animation Playback: " + std::string(onionSkin->playbackEnabled ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
     alert->setAlertPosition( 
@@ -1010,15 +1010,13 @@ void onPBKeybind() {
     EditorUI::get()->addChild(alert);
 }
 
-
-
 void onRPKeybind() {
     onionSkin->renderPast = !onionSkin->renderPast;
     if (onionSkin->settingsPopup != nullptr && onionSkin->settingsPopup->rpSetting != nullptr) {
         onionSkin->settingsPopup->rpSetting->toggle(onionSkin->renderPast);
     }
 
-    //Change menu setting accordingly
+    
     Mod::get()->setSettingValue<bool>("show-past", onionSkin->renderPast);
     auto alert = TextAlertPopup::create("Past Frames: " + std::string(onionSkin->renderPast ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
@@ -1037,7 +1035,7 @@ void onRFKeybind() {
         onionSkin->settingsPopup->rfSetting->toggle(onionSkin->renderFuture);
     }
 
-    //Change menu setting accordingly
+    
     Mod::get()->setSettingValue<bool>("show-future", onionSkin->renderFuture);
     auto alert = TextAlertPopup::create("Future Frames: " + std::string(onionSkin->renderFuture ? "On" : "Off"), 0.6f, 0.6f, 100, "chatFont-uhd.fnt");
 
@@ -1067,19 +1065,6 @@ void onRFKeybind() {
 
 #include <Geode/modify/EditorUI.hpp>
 class $modify(myEditorUI, EditorUI) {
-    struct Fields {
-        //Keybind listeners
-        geode::ListenerHandle* m_osListener = nullptr;
-        geode::ListenerHandle* m_pbListener = nullptr;
-
-        geode::ListenerHandle* m_rpListener = nullptr;
-        geode::ListenerHandle* m_rfListener = nullptr;
-
-        //Avoid duplicating listeners
-        bool keybindsRegistered = false;
-    };
-    
-
 
     static void onModify(auto& self) {
         (void)self.setHookPriority("EditorUI::init", -1600); //Make late to add button to far right
@@ -1118,8 +1103,6 @@ class $modify(myEditorUI, EditorUI) {
         updateTimestamp();
 
         if (!onionSkin->playbackEnabled) return;
-
-        
 
         onionSkin->pbTimer += dt;
 
@@ -1182,40 +1165,53 @@ class $modify(myEditorUI, EditorUI) {
         
         
            
-        if (!onionSkin->kbRegistered) {
-
-            //Onion Skin Toggle
-            m_fields->m_osListener = listenForKeybindSettingPresses("onion-enable-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                if (!down || repeat) return;
-                onOSKeybind();
-                
-            });
-
-
-            //Animation Playback Toggle
-            m_fields->m_pbListener = listenForKeybindSettingPresses("playback-enable-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                if (!down || repeat) return;
-                onPBKeybind();
-            });
         
 
-            //Past Frames Toggle
-            m_fields->m_rpListener = listenForKeybindSettingPresses("render-past-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                if (!down || repeat) return;
-                onRPKeybind();
-                
-            });
+        //Onion Skin Toggle
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "onion-enable-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    onOSKeybind();
+                }
+            }
+        );
         
-        
-            //Future Frames Toggle
-            m_fields->m_rfListener = listenForKeybindSettingPresses("render-future-keybind", [](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                if (!down || repeat) return;
-                onRFKeybind();
-                
-            });
 
-            onionSkin->kbRegistered = true;
-        }
+
+        //Animation Playback Toggle
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "playback-enable-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    onPBKeybind();
+                }
+            }
+        );
+    
+
+        //Past Frames Toggle
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "render-past-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    onRPKeybind();
+                }
+            }
+        );
+    
+    
+        //Future Frames Toggle
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "render-future-keybind"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down && !repeat) {
+                    onRFKeybind();
+                }
+            }
+        );
+
+    
 
         if (auto layerMenu = this->getChildByID("layer-menu")) {
             
@@ -1277,7 +1273,7 @@ class $modify(myEditorUI, EditorUI) {
     void keyDown(cocos2d::enumKeyCodes key, double timestamp) {
 		EditorUI::keyDown(key, timestamp);
 
-		if (!onionSkin->playtesting || getChildByID("position-slider")->isVisible()) {
+		if (!onionSkin->playtesting && getChildByID("position-slider")->isVisible()) {
 			onionSkin->LayerToggle->setVisible(true);
 		}
 		else {
@@ -1340,21 +1336,11 @@ class $modify(myEditorUI, EditorUI) {
         this->addChild(popup);
     }
 
-    //Delete listners(?)
+    
     ~myEditorUI() {
-        m_fields->m_osListener->destroy();
-        delete m_fields->m_osListener;
-        m_fields->m_pbListener->destroy();
-        delete m_fields->m_pbListener;
-        m_fields->m_rfListener->destroy();
-        delete m_fields->m_rfListener;
-        m_fields->m_rpListener->destroy();
-        delete m_fields->m_rpListener;
-
         if (onionSkin) {
-            
-            delete onionSkin;
             onionSkin = nullptr;
+            delete onionSkin;   
         }
     }
 
